@@ -12,6 +12,7 @@ import { FAB } from './components/FAB'
 import { AddGameModal } from './components/AddGameModal'
 import { AddExpenseModal } from './components/AddExpenseModal'
 import { EditGameModal } from './components/EditGameModal'
+import { EditExpenseModal } from './components/EditExpenseModal'
 
 type Tab = 'games' | 'expenses'
 type Modal = 'addGame' | 'addExpense' | null
@@ -20,6 +21,7 @@ function App() {
   const [activeTab, setActiveTab] = useState<Tab>('games')
   const [modal, setModal] = useState<Modal>(null)
   const [editingGame, setEditingGame] = useState<Game | null>(null)
+  const [editingExpense, setEditingExpense] = useState<Expense | null>(null)
   const [currentUser, setCurrentUser] = useState<User | null>(null)
   const [games, setGames] = useState<Game[]>([])
   const [expenses, setExpenses] = useState<Expense[]>([])
@@ -70,7 +72,7 @@ function App() {
               {activeTab === 'games' ? (
                 <GamesList games={games} onEditGame={currentUser?.email === import.meta.env.VITE_OWNER_EMAIL ? setEditingGame : () => {}} />
               ) : (
-                <ExpensesList expenses={expenses} />
+                <ExpensesList expenses={expenses} onEditExpense={currentUser?.email === import.meta.env.VITE_OWNER_EMAIL ? setEditingExpense : () => {}} />
               )}
             </div>
             {currentUser?.email === import.meta.env.VITE_OWNER_EMAIL && (
@@ -79,6 +81,7 @@ function App() {
             {modal === 'addGame' && <AddGameModal onClose={() => setModal(null)} />}
             {modal === 'addExpense' && <AddExpenseModal onClose={() => setModal(null)} />}
             {editingGame && <EditGameModal game={editingGame} onClose={() => setEditingGame(null)} />}
+            {editingExpense && <EditExpenseModal expense={editingExpense} onClose={() => setEditingExpense(null)} />}
           </div>
 
           <RightJoyCon />
