@@ -1,4 +1,7 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
+import { onAuthStateChanged, type User } from 'firebase/auth'
+import { auth } from './lib/firebase'
+import { subscribeToGames, subscribeToExpenses } from './lib/firestore'
 import { LeftJoyCon } from './components/LeftJoyCon'
 import { RightJoyCon } from './components/RightJoyCon'
 import { TopBar } from './components/TopBar'
@@ -9,39 +12,36 @@ import { FAB } from './components/FAB'
 
 type Tab = 'games' | 'expenses'
 
-const MOCK_GAMES: Game[] = [
-  { id: '1', title: 'Mario Kart World', hoursPlayed: 42, coverColor: '#C20030', coverInitials: 'MK' },
-  { id: '2', title: 'Zelda: Echoes of Wisdom', hoursPlayed: 31, coverColor: '#004499', coverInitials: 'ZL' },
-  { id: '3', title: 'Pokémon Legends: Z-A', hoursPlayed: 14, coverColor: '#3D3000', coverInitials: 'PK' },
-  { id: '4', title: "Let's Go Pikachu", hoursPlayed: 8, coverColor: '#664400', coverInitials: 'LGP' },
-  { id: '5', title: 'Splatoon 3', hoursPlayed: 22, coverColor: '#CC6600', coverInitials: 'SP' },
-  { id: '6', title: 'Animal Crossing', hoursPlayed: 67, coverColor: '#227744', coverInitials: 'AC' },
-  { id: '7', title: 'Metroid Prime 4', hoursPlayed: 19, coverColor: '#112233', coverInitials: 'MP' },
-  { id: '8', title: 'Kirby and the Forgotten Land', hoursPlayed: 11, coverColor: '#FF88AA', coverInitials: 'KI' },
-  { id: '9', title: 'Minecraft', hoursPlayed: null, coverColor: '#2A4A10', coverInitials: 'MC' },
-  { id: '10', title: 'Hollow Knight: Silksong', hoursPlayed: null, coverColor: '#2A1A44', coverInitials: 'HK' },
-]
-
-const MOCK_EXPENSES: Expense[] = [
-  { id: '1', title: 'Nintendo Switch 2', amount: 1681, type: 'console', date: new Date(2025, 3, 1), isGift: false },
-  { id: '2', title: 'Mario Kart World', amount: 299, type: 'game', date: new Date(2025, 3, 1), isGift: false },
-  { id: '3', title: 'Pakiet 3 gier', amount: 499, type: 'bundle', date: new Date(2025, 3, 1), isGift: false },
-  { id: '4', title: "Let's Go Pikachu", amount: 0, type: 'gift', date: new Date(2024, 11, 25), isGift: true },
-]
-
 function App() {
   const [activeTab, setActiveTab] = useState<Tab>('games')
+  const [currentUser, setCurrentUser] = useState<User | null>(null)
+  const [games, setGames] = useState<Game[]>([])
+  const [expenses, setExpenses] = useState<Expense[]>([])
 
-  const totalSpent = MOCK_EXPENSES
+  useEffect(() => {
+    const unsubscribeAuth = onAuthStateChanged(auth, setCurrentUser)
+    return unsubscribeAuth
+  }, [])
+
+  useEffect(() => {
+    const unsubGames = subscribeToGames(setGames)
+    const unsubExpenses = subscribeToExpenses(setExpenses)
+    return () => {
+      unsubGames()
+      unsubExpenses()
+    }
+  }, [])
+
+  const totalSpent = expenses
     .filter(e => !e.isGift)
     .reduce((sum, e) => sum + e.amount, 0)
 
-  const totalHours = MOCK_GAMES
+  const totalHours = games
     .filter(g => g.hoursPlayed !== null)
     .reduce((sum, g) => sum + (g.hoursPlayed ?? 0), 0)
 
   const costPerHour = totalHours > 0 ? totalSpent / totalHours : null
-  const hasUncountedGames = MOCK_GAMES.some(g => g.hoursPlayed === null)
+  const hasUncountedGames = games.some(g => g.hoursPlayed === null)
 
   return (
     <div className="min-h-screen bg-[#1A1A22] flex items-center justify-center p-3">
@@ -53,7 +53,7 @@ function App() {
           <LeftJoyCon />
 
           <div className="flex-1 bg-[#07070E] flex flex-col relative" style={{ height: '700px' }}>
-            <TopBar activeTab={activeTab} onTabChange={setActiveTab} />
+            <TopBar activeTab={activeTab} onTabChange={setActiveTab} currentUser={currentUser} />
             <HeroStat
               costPerHour={costPerHour}
               totalSpent={totalSpent}
@@ -62,12 +62,12 @@ function App() {
             />
             <div className="flex-1 overflow-hidden flex flex-col">
               {activeTab === 'games' ? (
-                <GamesList games={MOCK_GAMES} />
+                <GamesList games={games} />
               ) : (
-                <ExpensesList expenses={MOCK_EXPENSES} />
+                <ExpensesList expenses={expenses} />
               )}
             </div>
-            <FAB />
+            {currentUser && <FAB />}
           </div>
 
           <RightJoyCon />

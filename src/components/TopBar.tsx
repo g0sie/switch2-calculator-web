@@ -1,13 +1,26 @@
-import { IconDeviceGamepad2, IconCash, IconWifi, IconBattery2, IconUser } from '@tabler/icons-react'
+import { IconDeviceGamepad2, IconCash, IconWifi, IconBattery2, IconUser, IconLogout } from '@tabler/icons-react'
+import { signInWithPopup, signOut, GoogleAuthProvider, type User } from 'firebase/auth'
+import { auth } from '../lib/firebase'
 
 type Tab = 'games' | 'expenses'
 
 interface TopBarProps {
   activeTab: Tab
   onTabChange: (tab: Tab) => void
+  currentUser: User | null
 }
 
-export function TopBar({ activeTab, onTabChange }: TopBarProps) {
+const provider = new GoogleAuthProvider()
+
+export function TopBar({ activeTab, onTabChange, currentUser }: TopBarProps) {
+  const handleAuthClick = async () => {
+    if (currentUser) {
+      await signOut(auth)
+    } else {
+      await signInWithPopup(auth, provider)
+    }
+  }
+
   return (
     <div
       style={{ background: '#0B0B18', borderBottom: '1px solid #141428', padding: '0 14px', display: 'flex', alignItems: 'flex-end', flexShrink: 0 }}
@@ -29,16 +42,29 @@ export function TopBar({ activeTab, onTabChange }: TopBarProps) {
         />
       </div>
 
-      {/* Right: status icons + login (self-centered since parent is items-end) */}
+      {/* Right: status icons + login */}
       <div style={{ display: 'flex', alignItems: 'center', gap: '14px', alignSelf: 'center' }}>
         <IconWifi size={14} style={{ color: '#6677AA' }} />
         <IconBattery2 size={14} style={{ color: '#6677AA' }} />
         <div style={{ width: '1px', height: '14px', background: '#1A1A30' }} />
         <button
-          style={{ width: '26px', height: '26px', border: '1px solid #2E2E52', color: '#6677AA', borderRadius: '50%', background: 'transparent', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
-          aria-label="Zaloguj się"
+          onClick={handleAuthClick}
+          style={{
+            width: '26px',
+            height: '26px',
+            border: currentUser ? '1px solid #1A55DD' : '1px solid #2E2E52',
+            color: currentUser ? '#4488FF' : '#6677AA',
+            borderRadius: '50%',
+            background: 'transparent',
+            cursor: 'pointer',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+          }}
+          aria-label={currentUser ? 'Wyloguj się' : 'Zaloguj się'}
+          title={currentUser ? `Wyloguj (${currentUser.email})` : 'Zaloguj się przez Google'}
         >
-          <IconUser size={15} />
+          {currentUser ? <IconLogout size={13} /> : <IconUser size={15} />}
         </button>
       </div>
     </div>
