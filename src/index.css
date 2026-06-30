@@ -1,110 +1,14 @@
-*,
-*::before,
-*::after {
-  box-sizing: border-box;
-}
+@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&display=swap');
+@import "tailwindcss";
 
 * {
+  box-sizing: border-box;
   margin: 0;
+  padding: 0;
 }
 
-html,
-body {
+html, body, #root {
   height: 100%;
-}
-
-body {
-  line-height: 1.5;
+  font-family: 'Space Grotesk', sans-serif;
   -webkit-font-smoothing: antialiased;
-}
-
-img,
-picture,
-video,
-canvas,
-svg {
-  display: block;
-  max-width: 100%;
-}
-
-input,
-button,
-textarea,
-select {
-  font: inherit;
-}
-
-p,
-h1,
-h2,
-h3,
-h4,
-h5,
-h6 {
-  overflow-wrap: break-word;
-}
-
-#root,
-#__next {
-  isolation: isolate;
-}
-
-:root {
-  --hdr-gradient: linear-gradient(
-    117deg in oklab,
-    oklch(81% 0.32 224) 0%,
-    47%,
-    oklch(80% 0.28 8) 100%
-  );
-  --sdr-gradient: linear-gradient(117deg, #00dfff 0%, 47%, #ff4b9b 100%);
-
-  background: var(--hdr-gradient);
-}
-
-.center {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  min-height: 100dvh;
-}
-
-.switch {
-  --switch-color: #2c2c2c;
-
-  display: flex;
-  align-items: center;
-  justify-content: center;
-
-  max-width: 90dvw;
-  max-height: 90dvh;
-  width: 100%;
-  aspect-ratio: 21.5/9;
-  /* border: 1px solid red; */
-}
-
-.joycon {
-  height: 100%;
-  aspect-ratio: 2.75/9;
-  background-color: var(--switch-color);
-}
-
-.joycon-left {
-  border-radius: 9rem 0 0 9rem;
-}
-.joycon-right {
-  border-radius: 0 9rem 9rem 0;
-}
-
-.screen-border {
-  height: 100%;
-  aspect-ratio: 16/9;
-  background-color: var(--switch-color);
-  padding: 0.8rem;
-}
-
-.screen {
-  margin: 0 auto;
-  background: black;
-  height: 100%;
-  aspect-ratio: 16/9;
 }
