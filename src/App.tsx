@@ -10,6 +10,7 @@ import { GamesList, type Game } from './components/GamesList'
 import { ExpensesList, type Expense } from './components/ExpensesList'
 import { FAB } from './components/FAB'
 import { AddGameModal } from './components/AddGameModal'
+import { AddExpenseModal } from './components/AddExpenseModal'
 
 type Tab = 'games' | 'expenses'
 type Modal = 'addGame' | 'addExpense' | null
@@ -28,7 +29,9 @@ function App() {
 
   useEffect(() => {
     const unsubGames = subscribeToGames(setGames)
-    const unsubExpenses = subscribeToExpenses(setExpenses)
+    const unsubExpenses = subscribeToExpenses(data =>
+      setExpenses([...data].sort((a, b) => b.date.getTime() - a.date.getTime()))
+    )
     return () => {
       unsubGames()
       unsubExpenses()
@@ -74,6 +77,7 @@ function App() {
               <FAB onAddGame={() => setModal('addGame')} onAddExpense={() => setModal('addExpense')} />
             )}
             {modal === 'addGame' && <AddGameModal onClose={() => setModal(null)} />}
+            {modal === 'addExpense' && <AddExpenseModal onClose={() => setModal(null)} />}
           </div>
 
           <RightJoyCon />
