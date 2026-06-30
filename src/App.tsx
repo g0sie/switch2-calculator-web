@@ -51,6 +51,7 @@ function App() {
     .reduce((sum, g) => sum + (g.hoursPlayed ?? 0), 0)
 
   const costPerHour = totalHours > 0 ? totalSpent / totalHours : null
+  const isOwner = currentUser?.email === import.meta.env.VITE_OWNER_EMAIL
 
   return (
     <div className="min-h-screen bg-[#1A1A22] flex items-center justify-center p-3">
@@ -62,7 +63,7 @@ function App() {
           <LeftJoyCon />
 
           <div className="flex-1 bg-[#07070E] flex flex-col relative" style={{ height: '700px' }}>
-            <TopBar activeTab={activeTab} onTabChange={setActiveTab} isOwner={currentUser?.email === import.meta.env.VITE_OWNER_EMAIL} />
+            <TopBar activeTab={activeTab} onTabChange={setActiveTab} isOwner={isOwner} />
             <HeroStat
               costPerHour={costPerHour}
               totalSpent={totalSpent}
@@ -70,12 +71,12 @@ function App() {
             />
             <div className="flex-1 overflow-hidden flex flex-col">
               {activeTab === 'games' ? (
-                <GamesList games={games} onEditGame={currentUser?.email === import.meta.env.VITE_OWNER_EMAIL ? setEditingGame : () => {}} />
+                <GamesList games={games} onEditGame={isOwner ? setEditingGame : () => {}} isOwner={isOwner} />
               ) : (
-                <ExpensesList expenses={expenses} onEditExpense={currentUser?.email === import.meta.env.VITE_OWNER_EMAIL ? setEditingExpense : () => {}} />
+                <ExpensesList expenses={expenses} onEditExpense={isOwner ? setEditingExpense : () => {}} isOwner={isOwner} />
               )}
             </div>
-            {currentUser?.email === import.meta.env.VITE_OWNER_EMAIL && (
+            {isOwner && (
               <FAB onAddGame={() => setModal('addGame')} onAddExpense={() => setModal('addExpense')} />
             )}
             {modal === 'addGame' && <AddGameModal onClose={() => setModal(null)} />}

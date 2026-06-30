@@ -19,6 +19,7 @@ export interface Game {
 interface GamesListProps {
   games: Game[];
   onEditGame: (game: Game) => void;
+  isOwner: boolean;
 }
 
 function toHHMM(hours: number): string {
@@ -27,7 +28,7 @@ function toHHMM(hours: number): string {
   return `${h}:${m.toString().padStart(2, "0")}`;
 }
 
-export function GamesList({ games, onEditGame }: GamesListProps) {
+export function GamesList({ games, onEditGame, isOwner }: GamesListProps) {
   const played = games.filter((g) => g.hoursPlayed !== null && g.hoursPlayed > 0);
   const notStarted = games.filter((g) => !g.hoursPlayed);
 
@@ -45,13 +46,13 @@ export function GamesList({ games, onEditGame }: GamesListProps) {
     >
       <SepLabel>Biblioteka gier</SepLabel>
       {played.map((game) => (
-        <GameRow key={game.id} game={game} onEdit={() => onEditGame(game)} />
+        <GameRow key={game.id} game={game} onEdit={() => onEditGame(game)} isOwner={isOwner} />
       ))}
       {notStarted.length > 0 && (
         <>
           <SepLabel style={{ marginTop: "12px" }}>nierozpoczęte</SepLabel>
           {notStarted.map((game) => (
-            <GameRow key={game.id} game={game} onEdit={() => onEditGame(game)} />
+            <GameRow key={game.id} game={game} onEdit={() => onEditGame(game)} isOwner={isOwner} />
           ))}
         </>
       )}
@@ -80,12 +81,12 @@ function SepLabel({
   );
 }
 
-function GameRow({ game, onEdit }: { game: Game; onEdit: () => void }) {
+function GameRow({ game, onEdit, isOwner }: { game: Game; onEdit: () => void; isOwner: boolean }) {
   return (
     <div
-      className="flex items-center gap-[10px] bg-[#111122] rounded-[7px] cursor-pointer hover:bg-[#16162A] transition-colors"
+      className={`flex items-center gap-[10px] bg-[#111122] rounded-[7px] transition-colors ${isOwner ? 'cursor-pointer hover:bg-[#16162A]' : ''}`}
       style={{ padding: "13px 12px" }}
-      onClick={onEdit}
+      onClick={isOwner ? onEdit : undefined}
     >
       <div
         className="w-[30px] h-[30px] rounded-[5px] flex items-center justify-center text-[10px] font-bold shrink-0"
