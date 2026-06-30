@@ -47,7 +47,6 @@ function App() {
     .reduce((sum, g) => sum + (g.hoursPlayed ?? 0), 0)
 
   const costPerHour = totalHours > 0 ? totalSpent / totalHours : null
-  const hasUncountedGames = games.some(g => g.hoursPlayed === null)
 
   return (
     <div className="min-h-screen bg-[#1A1A22] flex items-center justify-center p-3">
@@ -64,7 +63,6 @@ function App() {
               costPerHour={costPerHour}
               totalSpent={totalSpent}
               totalHours={totalHours}
-              hasUncountedGames={hasUncountedGames}
             />
             <div className="flex-1 overflow-hidden flex flex-col">
               {activeTab === 'games' ? (

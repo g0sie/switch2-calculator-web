@@ -30,8 +30,8 @@ function toHHMM(hours: number): string {
 }
 
 export function GamesList({ games }: GamesListProps) {
-  const counted = games.filter((g) => g.hoursPlayed !== null);
-  const uncounted = games.filter((g) => g.hoursPlayed === null);
+  const played = games.filter((g) => g.hoursPlayed !== null && g.hoursPlayed > 0);
+  const notStarted = games.filter((g) => !g.hoursPlayed);
 
   return (
     <div
@@ -46,13 +46,13 @@ export function GamesList({ games }: GamesListProps) {
       }}
     >
       <SepLabel>Biblioteka gier</SepLabel>
-      {counted.map((game) => (
+      {played.map((game) => (
         <GameRow key={game.id} game={game} />
       ))}
-      {uncounted.length > 0 && (
+      {notStarted.length > 0 && (
         <>
-          <SepLabel style={{ marginTop: "12px" }}>niezliczone</SepLabel>
-          {uncounted.map((game) => (
+          <SepLabel style={{ marginTop: "12px" }}>nierozpoczęte</SepLabel>
+          {notStarted.map((game) => (
             <GameRow key={game.id} game={game} />
           ))}
         </>
@@ -113,7 +113,22 @@ function GameRow({ game }: { game: Game }) {
     setColorPickerOpen(false);
   };
 
-  const handleSave = () => setEditing(false);
+  const handleSave = async () => {
+    const trimmed = inputVal.trim()
+    if (trimmed === '') {
+      await updateGame(game.id, { hoursPlayed: null })
+    } else {
+      let hours: number
+      if (trimmed.includes(':')) {
+        const [h, m] = trimmed.split(':').map(Number)
+        hours = h + m / 60
+      } else {
+        hours = parseFloat(trimmed.replace(',', '.'))
+      }
+      if (!isNaN(hours) && hours >= 0) await updateGame(game.id, { hoursPlayed: hours })
+    }
+    setEditing(false)
+  };
 
   const handleCancel = (e: React.MouseEvent) => {
     e.stopPropagation();

@@ -2,10 +2,9 @@ interface HeroStatProps {
   costPerHour: number | null
   totalSpent: number
   totalHours: number
-  hasUncountedGames: boolean
 }
 
-export function HeroStat({ costPerHour, totalSpent, totalHours, hasUncountedGames }: HeroStatProps) {
+export function HeroStat({ costPerHour, totalSpent, totalHours }: HeroStatProps) {
   const formatted = costPerHour != null
     ? costPerHour.toFixed(2).replace('.', ',')
     : '—'
@@ -49,9 +48,7 @@ export function HeroStat({ costPerHour, totalSpent, totalHours, hasUncountedGame
             </div>
             <div className="text-[15px] font-semibold" style={{ color: '#C8C8E8' }}>
               {Math.floor(totalHours)}{' '}
-              <span className="text-[10px] font-normal" style={{ color: '#6677AA' }}>
-                h{hasUncountedGames ? ' (+ ?)' : ''}
-              </span>
+              <span className="text-[10px] font-normal" style={{ color: '#6677AA' }}>h</span>
             </div>
           </div>
         </div>
