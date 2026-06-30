@@ -53,7 +53,7 @@ function App() {
           <LeftJoyCon />
 
           <div className="flex-1 bg-[#07070E] flex flex-col relative" style={{ height: '700px' }}>
-            <TopBar activeTab={activeTab} onTabChange={setActiveTab} currentUser={currentUser} />
+            <TopBar activeTab={activeTab} onTabChange={setActiveTab} isOwner={currentUser?.email === import.meta.env.VITE_OWNER_EMAIL} />
             <HeroStat
               costPerHour={costPerHour}
               totalSpent={totalSpent}
@@ -67,7 +67,7 @@ function App() {
                 <ExpensesList expenses={expenses} />
               )}
             </div>
-            {currentUser && <FAB />}
+            {currentUser?.email === import.meta.env.VITE_OWNER_EMAIL && <FAB />}
           </div>
 
           <RightJoyCon />

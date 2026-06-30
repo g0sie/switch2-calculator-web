@@ -1,5 +1,5 @@
 import { IconDeviceGamepad2, IconCash, IconWifi, IconBattery2, IconUser, IconLogout } from '@tabler/icons-react'
-import { signInWithPopup, signOut, GoogleAuthProvider, type User } from 'firebase/auth'
+import { signInWithPopup, signOut, GoogleAuthProvider } from 'firebase/auth'
 import { auth } from '../lib/firebase'
 
 type Tab = 'games' | 'expenses'
@@ -7,14 +7,14 @@ type Tab = 'games' | 'expenses'
 interface TopBarProps {
   activeTab: Tab
   onTabChange: (tab: Tab) => void
-  currentUser: User | null
+  isOwner: boolean
 }
 
 const provider = new GoogleAuthProvider()
 
-export function TopBar({ activeTab, onTabChange, currentUser }: TopBarProps) {
+export function TopBar({ activeTab, onTabChange, isOwner }: TopBarProps) {
   const handleAuthClick = async () => {
-    if (currentUser) {
+    if (isOwner) {
       await signOut(auth)
     } else {
       await signInWithPopup(auth, provider)
@@ -52,8 +52,8 @@ export function TopBar({ activeTab, onTabChange, currentUser }: TopBarProps) {
           style={{
             width: '26px',
             height: '26px',
-            border: currentUser ? '1px solid #1A55DD' : '1px solid #2E2E52',
-            color: currentUser ? '#4488FF' : '#6677AA',
+            border: isOwner ? '1px solid #1A55DD' : '1px solid #2E2E52',
+            color: isOwner ? '#4488FF' : '#6677AA',
             borderRadius: '50%',
             background: 'transparent',
             cursor: 'pointer',
@@ -61,10 +61,10 @@ export function TopBar({ activeTab, onTabChange, currentUser }: TopBarProps) {
             alignItems: 'center',
             justifyContent: 'center',
           }}
-          aria-label={currentUser ? 'Wyloguj się' : 'Zaloguj się'}
-          title={currentUser ? `Wyloguj (${currentUser.email})` : 'Zaloguj się przez Google'}
+          aria-label={isOwner ? 'Wyloguj się' : 'Zaloguj się'}
+          title={isOwner ? 'Wyloguj się' : 'Zaloguj się przez Google'}
         >
-          {currentUser ? <IconLogout size={13} /> : <IconUser size={15} />}
+          {isOwner ? <IconLogout size={13} /> : <IconUser size={15} />}
         </button>
       </div>
     </div>
