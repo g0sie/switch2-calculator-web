@@ -3,6 +3,14 @@ import { IconX } from '@tabler/icons-react'
 import { HexColorPicker } from 'react-colorful'
 import { addGame } from '../lib/firestore'
 
+function getContrastColor(hex: string): string {
+  const r = parseInt(hex.slice(1, 3), 16)
+  const g = parseInt(hex.slice(3, 5), 16)
+  const b = parseInt(hex.slice(5, 7), 16)
+  const luminance = (0.299 * r + 0.587 * g + 0.114 * b) / 255
+  return luminance > 0.5 ? '#000000' : '#ffffff'
+}
+
 interface AddGameModalProps {
   onClose: () => void
 }
@@ -74,7 +82,7 @@ export function AddGameModal({ onClose }: AddGameModalProps) {
 
         {/* Preview */}
         <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-          <div style={{ width: '36px', height: '36px', borderRadius: '6px', background: coverColor, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '11px', fontWeight: 700, color: '#fff', flexShrink: 0 }}>
+          <div style={{ width: '36px', height: '36px', borderRadius: '6px', background: coverColor, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '11px', fontWeight: 700, color: getContrastColor(coverColor), flexShrink: 0 }}>
             {coverInitials || '?'}
           </div>
           <span style={{ color: '#AABBDD', fontSize: '12px' }}>{title || 'Tytuł gry'}</span>
