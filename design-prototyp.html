@@ -1,0 +1,186 @@
+
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+.sw *{box-sizing:border-box;margin:0;padding:0;}
+.sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0;}
+.sw-input{width:56px;height:24px;background:#10101C;border:1px solid #2244AA88;border-radius:4px;color:#F0F0F8;font-size:12px;font-family:'Space Grotesk',sans-serif;padding:0 6px;outline:none;}
+.sw-input:focus{border-color:#4488FF;}
+.iBtn{background:none;border:none;cursor:pointer;padding:3px;display:flex;align-items:center;justify-content:center;border-radius:4px;color:#4A5577;}
+.iBtn:hover{color:#8899BB;}
+.iBtn.ok{color:#226633;}.iBtn.ok:hover{color:#00AA44;}
+.iBtn.no{color:#662222;}.iBtn.no:hover{color:#CC2222;}
+.fab-wrap{position:absolute;bottom:14px;right:14px;display:flex;flex-direction:column-reverse;align-items:flex-end;gap:7px;z-index:10;}
+.fab-main{width:40px;height:40px;background:#003EBB;border:none;border-radius:50%;cursor:pointer;display:flex;align-items:center;justify-content:center;color:white;transition:background .15s;}
+.fab-action{background:#0E0E1C;border:1px solid #1C1C36;border-radius:20px;padding:7px 14px 7px 10px;cursor:pointer;display:flex;align-items:center;gap:8px;color:#B0C8FF;font-size:12px;font-family:'Space Grotesk',sans-serif;white-space:nowrap;}
+.fab-action:hover{background:#171730;}
+.grow-row{display:flex;align-items:center;gap:10px;padding:9px 12px;background:#0D0D1A;border-radius:7px;}
+.eh-trigger{opacity:0;transition:opacity .15s;}
+.grow-row:hover .eh-trigger{opacity:1;}
+.sep-label{color:#5A5A88;font-size:9px;text-transform:uppercase;letter-spacing:.12em;display:flex;align-items:center;gap:8px;padding:4px 2px 2px;}
+.sep-label::after{content:'';flex:1;height:1px;background:#1E1E36;}
+.exp-row{display:flex;justify-content:space-between;align-items:center;padding:10px 12px;background:#0D0D1A;border-radius:7px;}
+.badge{font-size:9px;padding:2px 7px;border-radius:10px;font-weight:500;}
+.nav-item{display:flex;align-items:center;gap:5px;cursor:pointer;padding:4px 2px;position:relative;}
+.nav-item.active .nav-lbl,.nav-item.active .nav-ic{color:#EEEEF8;}
+.nav-item.active::after{content:'';position:absolute;bottom:-3px;left:0;width:100%;height:2px;background:#EEEEF8;border-radius:2px;}
+.nav-item:not(.active) .nav-lbl,.nav-item:not(.active) .nav-ic{color:#444A72;}
+.nav-item:not(.active):hover .nav-lbl,.nav-item:not(.active):hover .nav-ic{color:#7788BB;}
+.nav-lbl{font-size:11px;font-weight:600;letter-spacing:.03em;font-family:'Space Grotesk',sans-serif;}
+.login-ring{display:flex;align-items:center;justify-content:center;width:26px;height:26px;border-radius:50%;border:1px solid #22223A;cursor:pointer;color:#444A72;}
+.login-ring:hover{color:#7788BB;border-color:#33335A;}
+/* D-pad i ABXY — identyczna geometria 44×44, kółka 14px */
+.btn-grid{position:relative;width:44px;height:44px;flex-shrink:0;}
+.btn-grid div{position:absolute;width:14px;height:14px;border-radius:50%;}
+.btn-grid .t{top:0;left:15px;}
+.btn-grid .b{bottom:0;left:15px;}
+.btn-grid .l{left:0;top:15px;}
+.btn-grid .r{right:0;top:15px;}
+</style>
+
+<div class="sw" style="background:#1A1A22;border-radius:12px;padding:12px;font-family:'Space Grotesk',sans-serif;">
+<h2 class="sr-only">Finalny mockup kalkulatora Switch 2 v7</h2>
+
+<div style="display:flex;align-items:stretch;border-radius:20px;overflow:hidden;outline:2px solid #2C2C3E;outline-offset:-1px;">
+
+  <!-- Left Joy-Con -->
+  <div style="width:62px;background:linear-gradient(165deg,#C20030,#960020);padding:14px 9px 18px;display:flex;flex-direction:column;align-items:center;gap:0;flex-shrink:0;">
+    <div style="position:relative;width:22px;height:22px;flex-shrink:0;">
+      <div style="position:absolute;top:8px;left:0;width:22px;height:6px;background:#820018;border-radius:3px;"></div>
+    </div>
+    <div style="width:26px;height:26px;background:#820018;border-radius:50%;margin-top:16px;box-shadow:inset 0 2px 3px #00000055;flex-shrink:0;"></div>
+    <!-- D-pad: identyczny kontener 44×44 jak ABXY -->
+    <div class="btn-grid" style="margin-top:16px;">
+      <div class="t" style="background:#720015;"></div>
+      <div class="b" style="background:#720015;"></div>
+      <div class="l" style="background:#720015;"></div>
+      <div class="r" style="background:#720015;"></div>
+    </div>
+  </div>
+
+  <!-- Screen -->
+  <div style="flex:1;background:#07070E;display:flex;flex-direction:column;position:relative;min-height:540px;">
+
+    <div style="background:#0B0B18;padding:8px 14px;display:flex;align-items:center;border-bottom:1px solid #141428;flex-shrink:0;gap:14px;">
+      <div style="display:flex;align-items:center;gap:14px;margin-right:auto;">
+        <div class="nav-item active" id="nav-g" onclick="setTab('g')">
+          <i class="ti ti-device-gamepad-2 nav-ic" aria-hidden="true" style="font-size:15px;"></i>
+          <span class="nav-lbl">Gry</span>
+          <div id="dot-g" style="width:4px;height:4px;background:#EEEEF8;border-radius:50%;margin-left:1px;"></div>
+        </div>
+        <div class="nav-item" id="nav-w" onclick="setTab('w')">
+          <i class="ti ti-cash nav-ic" aria-hidden="true" style="font-size:15px;"></i>
+          <span class="nav-lbl">Wydatki</span>
+          <div id="dot-w" style="width:4px;height:4px;background:#EEEEF8;border-radius:50%;margin-left:1px;display:none;"></div>
+        </div>
+      </div>
+      <i class="ti ti-wifi" aria-hidden="true" style="font-size:14px;color:#3A3A5A;"></i>
+      <i class="ti ti-battery-2" aria-hidden="true" style="font-size:14px;color:#3A3A5A;"></i>
+      <div style="width:1px;height:14px;background:#1A1A30;"></div>
+      <div class="login-ring" title="Zaloguj się" aria-label="Zaloguj się"><i class="ti ti-user" aria-hidden="true" style="font-size:15px;"></i></div>
+    </div>
+
+    <div style="padding:12px 14px 8px;flex-shrink:0;">
+      <div style="background:#0A0A12;border:1px solid rgba(255,255,255,0.16);border-radius:10px;padding:16px 18px 14px;">
+        <div style="color:#6677AA;font-size:9px;text-transform:uppercase;letter-spacing:.12em;margin-bottom:8px;">Koszt per godzinę</div>
+        <div style="display:flex;align-items:baseline;margin-bottom:14px;">
+          <span style="color:#F0F0F8;font-size:40px;font-weight:700;line-height:1;letter-spacing:-1.5px;">26,09</span>
+          <span style="color:#6677AA;font-size:15px;font-weight:500;margin-left:8px;">PLN/h</span>
+        </div>
+        <div style="display:flex;padding-top:12px;border-top:1px solid rgba(255,255,255,0.07);">
+          <div style="flex:1;">
+            <div style="color:#6677AA;font-size:9px;text-transform:uppercase;letter-spacing:.1em;margin-bottom:3px;">Wydano łącznie</div>
+            <div style="color:#C8C8E8;font-size:15px;font-weight:600;">2 479 <span style="font-size:10px;color:#6677AA;font-weight:400;">PLN</span></div>
+          </div>
+          <div style="width:1px;background:rgba(255,255,255,0.07);margin:0 16px;"></div>
+          <div style="flex:1;">
+            <div style="color:#6677AA;font-size:9px;text-transform:uppercase;letter-spacing:.1em;margin-bottom:3px;">Zagrane godziny</div>
+            <div style="color:#C8C8E8;font-size:15px;font-weight:600;">95 <span style="font-size:10px;color:#6677AA;font-weight:400;">h (+ Minecraft ?)</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div id="v-g" style="padding:0 14px 80px;display:flex;flex-direction:column;gap:5px;">
+      <div class="sep-label">Biblioteka gier</div>
+      <div class="grow-row" id="gr1">
+        <div style="width:30px;height:30px;background:#C20030;border-radius:5px;display:flex;align-items:center;justify-content:center;color:#fff;font-size:9px;font-weight:700;flex-shrink:0;">MK</div>
+        <div style="flex:1;min-width:0;"><div style="color:#E8E8F8;font-size:12px;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">Mario Kart World</div></div>
+        <div id="hd1" style="display:flex;align-items:center;gap:5px;"><span style="color:#8899BB;font-size:12px;">42h</span><button class="iBtn eh-trigger" onclick="startEdit(1,42)" aria-label="Edytuj godziny"><i class="ti ti-pencil" aria-hidden="true" style="font-size:13px;"></i></button></div>
+        <div id="he1" style="display:none;align-items:center;gap:4px;"><input class="sw-input" type="number" id="in1" value="42" min="0" step="0.5"><button class="iBtn ok" onclick="saveEdit(1)" aria-label="Zapisz"><i class="ti ti-check" aria-hidden="true" style="font-size:14px;"></i></button><button class="iBtn no" onclick="cancelEdit(1)" aria-label="Anuluj"><i class="ti ti-x" aria-hidden="true" style="font-size:14px;"></i></button></div>
+      </div>
+      <div class="grow-row" id="gr2">
+        <div style="width:30px;height:30px;background:#004499;border-radius:5px;display:flex;align-items:center;justify-content:center;color:#fff;font-size:9px;font-weight:700;flex-shrink:0;">ZL</div>
+        <div style="flex:1;min-width:0;"><div style="color:#E8E8F8;font-size:12px;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">Zelda: Echoes of Wisdom</div></div>
+        <div id="hd2" style="display:flex;align-items:center;gap:5px;"><span style="color:#8899BB;font-size:12px;">31h</span><button class="iBtn eh-trigger" onclick="startEdit(2,31)" aria-label="Edytuj godziny"><i class="ti ti-pencil" aria-hidden="true" style="font-size:13px;"></i></button></div>
+        <div id="he2" style="display:none;align-items:center;gap:4px;"><input class="sw-input" type="number" id="in2" value="31" min="0" step="0.5"><button class="iBtn ok" onclick="saveEdit(2)" aria-label="Zapisz"><i class="ti ti-check" aria-hidden="true" style="font-size:14px;"></i></button><button class="iBtn no" onclick="cancelEdit(2)" aria-label="Anuluj"><i class="ti ti-x" aria-hidden="true" style="font-size:14px;"></i></button></div>
+      </div>
+      <div class="grow-row" id="gr3">
+        <div style="width:30px;height:30px;background:#3D3000;border-radius:5px;display:flex;align-items:center;justify-content:center;color:#FFAA00;font-size:9px;font-weight:700;flex-shrink:0;">PK</div>
+        <div style="flex:1;min-width:0;"><div style="color:#E8E8F8;font-size:12px;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">Pokémon Legends: Z-A</div></div>
+        <div id="hd3" style="display:flex;align-items:center;gap:5px;"><span style="color:#8899BB;font-size:12px;">14h</span><button class="iBtn eh-trigger" onclick="startEdit(3,14)" aria-label="Edytuj godziny"><i class="ti ti-pencil" aria-hidden="true" style="font-size:13px;"></i></button></div>
+        <div id="he3" style="display:none;align-items:center;gap:4px;"><input class="sw-input" type="number" id="in3" value="14" min="0" step="0.5"><button class="iBtn ok" onclick="saveEdit(3)" aria-label="Zapisz"><i class="ti ti-check" aria-hidden="true" style="font-size:14px;"></i></button><button class="iBtn no" onclick="cancelEdit(3)" aria-label="Anuluj"><i class="ti ti-x" aria-hidden="true" style="font-size:14px;"></i></button></div>
+      </div>
+      <div class="grow-row" id="gr4">
+        <div style="width:30px;height:30px;background:#664400;border-radius:5px;display:flex;align-items:center;justify-content:center;color:#FFDD44;font-size:9px;font-weight:700;flex-shrink:0;">LGP</div>
+        <div style="flex:1;min-width:0;"><div style="color:#E8E8F8;font-size:12px;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">Let's Go Pikachu</div></div>
+        <div id="hd4" style="display:flex;align-items:center;gap:5px;"><span style="color:#8899BB;font-size:12px;">8h</span><button class="iBtn eh-trigger" onclick="startEdit(4,8)" aria-label="Edytuj godziny"><i class="ti ti-pencil" aria-hidden="true" style="font-size:13px;"></i></button></div>
+        <div id="he4" style="display:none;align-items:center;gap:4px;"><input class="sw-input" type="number" id="in4" value="8" min="0" step="0.5"><button class="iBtn ok" onclick="saveEdit(4)" aria-label="Zapisz"><i class="ti ti-check" aria-hidden="true" style="font-size:14px;"></i></button><button class="iBtn no" onclick="cancelEdit(4)" aria-label="Anuluj"><i class="ti ti-x" aria-hidden="true" style="font-size:14px;"></i></button></div>
+      </div>
+      <div class="sep-label" style="margin-top:4px;">niezliczone</div>
+      <div class="grow-row" id="gr5">
+        <div style="width:30px;height:30px;background:#2A4A10;border-radius:5px;display:flex;align-items:center;justify-content:center;color:#77CC33;font-size:9px;font-weight:700;flex-shrink:0;">MC</div>
+        <div style="flex:1;min-width:0;"><div style="color:#E8E8F8;font-size:12px;font-weight:500;">Minecraft</div><div style="color:#5A5A88;font-size:10px;">godziny nieznane</div></div>
+        <div id="hd5" style="display:flex;align-items:center;gap:5px;"><span style="color:#444466;font-size:14px;font-weight:700;">?</span><button class="iBtn eh-trigger" onclick="startEditUnknown(5)" aria-label="Ustaw godziny"><i class="ti ti-pencil" aria-hidden="true" style="font-size:13px;"></i></button></div>
+        <div id="he5" style="display:none;align-items:center;gap:4px;"><input class="sw-input" type="number" id="in5" placeholder="?" min="0" step="1"><button class="iBtn ok" onclick="saveEditUnknown(5)" aria-label="Zapisz"><i class="ti ti-check" aria-hidden="true" style="font-size:14px;"></i></button><button class="iBtn no" onclick="cancelEdit(5)" aria-label="Anuluj"><i class="ti ti-x" aria-hidden="true" style="font-size:14px;"></i></button></div>
+      </div>
+    </div>
+
+    <div id="v-w" style="padding:0 14px 80px;flex-direction:column;gap:5px;display:none;">
+      <div class="sep-label">Historia wydatków</div>
+      <div class="exp-row"><div><div style="color:#E8E8F8;font-size:12px;font-weight:500;">Nintendo Switch 2</div><div style="color:#5A5A88;font-size:10px;">kwiecień 2025</div></div><div style="display:flex;align-items:center;gap:8px;"><span class="badge" style="background:#14142A;color:#5566AA;">konsola</span><span style="color:#EEEEF8;font-size:13px;font-weight:600;">1 681 PLN</span></div></div>
+      <div class="exp-row"><div><div style="color:#E8E8F8;font-size:12px;font-weight:500;">Mario Kart World</div><div style="color:#5A5A88;font-size:10px;">kwiecień 2025</div></div><div style="display:flex;align-items:center;gap:8px;"><span class="badge" style="background:#14142A;color:#5566AA;">gra</span><span style="color:#EEEEF8;font-size:13px;font-weight:600;">299 PLN</span></div></div>
+      <div class="exp-row"><div><div style="color:#E8E8F8;font-size:12px;font-weight:500;">Pakiet 3 gier</div><div style="color:#5A5A88;font-size:10px;">Zelda + Pokémon + ??? • kwiecień 2025</div></div><div style="display:flex;align-items:center;gap:8px;"><span class="badge" style="background:#14142A;color:#5566AA;">pakiet</span><span style="color:#EEEEF8;font-size:13px;font-weight:600;">499 PLN</span></div></div>
+      <div class="exp-row" style="opacity:.45;"><div><div style="color:#E8E8F8;font-size:12px;font-weight:500;">Let's Go Pikachu</div><div style="color:#5A5A88;font-size:10px;">prezent (gwiazdka) • nie wliczane</div></div><div style="display:flex;align-items:center;gap:8px;"><span class="badge" style="background:#14142A;color:#336633;">gratis</span><span style="color:#5A5A88;font-size:13px;font-weight:500;">0 PLN</span></div></div>
+    </div>
+
+    <div class="fab-wrap">
+      <div id="fab-menu" style="display:none;flex-direction:column;gap:6px;align-items:flex-end;">
+        <button class="fab-action"><i class="ti ti-device-gamepad-2" aria-hidden="true" style="font-size:15px;color:#4488FF;"></i>Dodaj grę</button>
+        <button class="fab-action"><i class="ti ti-cash" aria-hidden="true" style="font-size:15px;color:#4488FF;"></i>Dodaj wydatek</button>
+      </div>
+      <button class="fab-main" id="fab-btn" onclick="toggleFab()" aria-label="Dodaj nowy wpis">
+        <i class="ti ti-plus" id="fab-ic" aria-hidden="true" style="font-size:18px;"></i>
+      </button>
+    </div>
+  </div>
+
+  <!-- Right Joy-Con -->
+  <div style="width:62px;background:linear-gradient(165deg,#0038CC,#002299);padding:14px 9px 18px;display:flex;flex-direction:column;align-items:center;gap:0;flex-shrink:0;">
+    <div style="position:relative;width:22px;height:22px;flex-shrink:0;">
+      <div style="position:absolute;top:8px;left:0;width:22px;height:6px;background:#001C88;border-radius:3px;"></div>
+      <div style="position:absolute;top:0;left:8px;width:6px;height:22px;background:#001C88;border-radius:3px;"></div>
+    </div>
+    <!-- ABXY: identyczny kontener 44×44 jak D-pad -->
+    <div class="btn-grid" style="margin-top:10px;">
+      <div class="t" style="background:#1A55CC;box-shadow:inset 0 1px 2px #00000044;"></div>
+      <div class="b" style="background:#BBAA00;box-shadow:inset 0 1px 2px #00000044;"></div>
+      <div class="l" style="background:#009933;box-shadow:inset 0 1px 2px #00000044;"></div>
+      <div class="r" style="background:#CC1122;box-shadow:inset 0 1px 2px #00000044;"></div>
+    </div>
+    <div style="width:26px;height:26px;background:#001C88;border-radius:50%;box-shadow:inset 0 2px 3px #00000055;margin-top:18px;flex-shrink:0;"></div>
+  </div>
+
+</div>
+</div>
+
+<script>
+let fabOpen=false,activeEdit=null;
+function toggleFab(){fabOpen=!fabOpen;document.getElementById('fab-menu').style.display=fabOpen?'flex':'none';document.getElementById('fab-ic').className=fabOpen?'ti ti-x':'ti ti-plus';document.getElementById('fab-btn').style.background=fabOpen?'#001F99':'#003EBB';}
+function setTab(t){['g','w'].forEach(id=>{document.getElementById('nav-'+id).classList.toggle('active',id===t);document.getElementById('dot-'+id).style.display=id===t?'block':'none';});document.getElementById('v-g').style.display=t==='g'?'flex':'none';document.getElementById('v-w').style.display=t==='w'?'flex':'none';}
+function startEdit(id,val){if(activeEdit&&activeEdit!==id)cancelEdit(activeEdit);activeEdit=id;document.getElementById('hd'+id).style.display='none';document.getElementById('he'+id).style.display='flex';document.getElementById('in'+id).value=val;document.getElementById('in'+id).focus();}
+function startEditUnknown(id){if(activeEdit&&activeEdit!==id)cancelEdit(activeEdit);activeEdit=id;document.getElementById('hd'+id).style.display='none';document.getElementById('he'+id).style.display='flex';document.getElementById('in'+id).focus();}
+function saveEdit(id){const v=document.getElementById('in'+id).value.trim();const span=document.getElementById('hd'+id).querySelector('span');if(v===''||isNaN(parseFloat(v))){span.textContent='?';span.style.color='#444466';span.style.fontSize='14px';span.style.fontWeight='700';}else{span.textContent=parseFloat(v)+'h';span.style.color='#8899BB';span.style.fontSize='12px';span.style.fontWeight='400';}document.getElementById('he'+id).style.display='none';document.getElementById('hd'+id).style.display='flex';activeEdit=null;}
+function saveEditUnknown(id){const v=document.getElementById('in'+id).value.trim();const span=document.getElementById('hd'+id).querySelector('span');if(v===''||isNaN(parseFloat(v))){span.textContent='?';span.style.color='#444466';span.style.fontWeight='700';}else{span.textContent=parseFloat(v)+'h';span.style.color='#8899BB';span.style.fontSize='12px';span.style.fontWeight='400';}document.getElementById('he'+id).style.display='none';document.getElementById('hd'+id).style.display='flex';activeEdit=null;}
+function cancelEdit(id){document.getElementById('he'+id).style.display='none';document.getElementById('hd'+id).style.display='flex';if(activeEdit===id)activeEdit=null;}
+document.querySelectorAll('.grow-row').forEach(r=>{r.addEventListener('mouseenter',()=>r.querySelectorAll('.eh-trigger').forEach(b=>b.style.opacity='1'));r.addEventListener('mouseleave',()=>r.querySelectorAll('.eh-trigger').forEach(b=>b.style.opacity='0'));});
+</script>
