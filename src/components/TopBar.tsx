@@ -24,17 +24,18 @@ export function TopBar({ activeTab, onTabChange }: TopBarProps) {
           icon={<IconCash size={15} />}
           label="Wydatki"
           active={activeTab === 'expenses'}
+          dotLeft
           onClick={() => onTabChange('expenses')}
         />
       </div>
 
       {/* Right: status icons + login (self-centered since parent is items-end) */}
       <div style={{ display: 'flex', alignItems: 'center', gap: '14px', alignSelf: 'center' }}>
-        <IconWifi size={14} style={{ color: '#3A3A5A' }} />
-        <IconBattery2 size={14} style={{ color: '#3A3A5A' }} />
+        <IconWifi size={14} style={{ color: '#6677AA' }} />
+        <IconBattery2 size={14} style={{ color: '#6677AA' }} />
         <div style={{ width: '1px', height: '14px', background: '#1A1A30' }} />
         <button
-          style={{ width: '26px', height: '26px', border: '1px solid #22223A', color: '#444A72', borderRadius: '50%', background: 'transparent', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+          style={{ width: '26px', height: '26px', border: '1px solid #2E2E52', color: '#6677AA', borderRadius: '50%', background: 'transparent', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
           aria-label="Zaloguj się"
         >
           <IconUser size={15} />
@@ -48,10 +49,15 @@ interface NavItemProps {
   icon: React.ReactNode
   label: string
   active: boolean
+  dotLeft?: boolean
   onClick: () => void
 }
 
-function NavItem({ icon, label, active, onClick }: NavItemProps) {
+function NavItem({ icon, label, active, dotLeft = false, onClick }: NavItemProps) {
+  const dot = active && (
+    <div style={{ width: '4px', height: '4px', background: '#EEEEF8', borderRadius: '50%' }} />
+  )
+
   return (
     <button
       onClick={onClick}
@@ -66,17 +72,16 @@ function NavItem({ icon, label, active, onClick }: NavItemProps) {
         background: 'none',
         border: 'none',
         borderBottom: active ? '2px solid #EEEEF8' : '2px solid transparent',
-        color: active ? '#EEEEF8' : '#444A72',
+        color: active ? '#EEEEF8' : '#6677AA',
         fontFamily: 'Space Grotesk, sans-serif',
       }}
     >
+      {dotLeft && dot}
       {icon}
       <span style={{ fontSize: '11px', fontWeight: 600, letterSpacing: '0.03em' }}>
         {label}
       </span>
-      {active && (
-        <div style={{ width: '4px', height: '4px', background: '#EEEEF8', borderRadius: '50%', marginLeft: '1px' }} />
-      )}
+      {!dotLeft && dot}
     </button>
   )
 }

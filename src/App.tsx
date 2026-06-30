@@ -14,7 +14,12 @@ const MOCK_GAMES: Game[] = [
   { id: '2', title: 'Zelda: Echoes of Wisdom', hoursPlayed: 31, coverColor: '#004499', coverInitials: 'ZL' },
   { id: '3', title: 'Pokémon Legends: Z-A', hoursPlayed: 14, coverColor: '#3D3000', coverInitials: 'PK' },
   { id: '4', title: "Let's Go Pikachu", hoursPlayed: 8, coverColor: '#664400', coverInitials: 'LGP' },
-  { id: '5', title: 'Minecraft', hoursPlayed: null, coverColor: '#2A4A10', coverInitials: 'MC' },
+  { id: '5', title: 'Splatoon 3', hoursPlayed: 22, coverColor: '#CC6600', coverInitials: 'SP' },
+  { id: '6', title: 'Animal Crossing', hoursPlayed: 67, coverColor: '#227744', coverInitials: 'AC' },
+  { id: '7', title: 'Metroid Prime 4', hoursPlayed: 19, coverColor: '#112233', coverInitials: 'MP' },
+  { id: '8', title: 'Kirby and the Forgotten Land', hoursPlayed: 11, coverColor: '#FF88AA', coverInitials: 'KI' },
+  { id: '9', title: 'Minecraft', hoursPlayed: null, coverColor: '#2A4A10', coverInitials: 'MC' },
+  { id: '10', title: 'Hollow Knight: Silksong', hoursPlayed: null, coverColor: '#2A1A44', coverInitials: 'HK' },
 ]
 
 const MOCK_EXPENSES: Expense[] = [
@@ -47,7 +52,7 @@ function App() {
         >
           <LeftJoyCon />
 
-          <div className="flex-1 bg-[#07070E] flex flex-col relative min-h-135">
+          <div className="flex-1 bg-[#07070E] flex flex-col relative" style={{ height: '700px' }}>
             <TopBar activeTab={activeTab} onTabChange={setActiveTab} />
             <HeroStat
               costPerHour={costPerHour}

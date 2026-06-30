@@ -30,10 +30,10 @@ interface ExpensesListProps {
 
 export function ExpensesList({ expenses }: ExpensesListProps) {
   return (
-    <div style={{ padding: '0 20px 80px', display: 'flex', flexDirection: 'column', gap: '5px', overflowY: 'auto' }}>
-      <div className="text-[#5A5A88] text-[9px] uppercase tracking-[0.12em] flex items-center gap-2 py-1 px-[2px]">
+    <div style={{ padding: '0 20px 80px', display: 'flex', flexDirection: 'column', gap: '5px', overflowY: 'auto', flex: 1, minHeight: 0 }}>
+      <div className="text-[#AABBDD] text-[11px] uppercase tracking-[0.12em] flex items-center gap-2 py-1 px-[2px]">
         Historia wydatków
-        <div className="flex-1 h-px bg-[#1E1E36]" />
+        <div className="flex-1 h-px" style={{ background: 'rgba(255,255,255,0.08)' }} />
       </div>
       {expenses.map(expense => (
         <ExpenseRow key={expense.id} expense={expense} />
@@ -45,30 +45,29 @@ export function ExpensesList({ expenses }: ExpensesListProps) {
 function ExpenseRow({ expense }: { expense: Expense }) {
   const label = TYPE_LABELS[expense.type]
   const isGift = expense.isGift
+  const formatted = expense.amount.toLocaleString('pl-PL')
 
   return (
     <div
-      className="flex justify-between items-center px-3 py-[10px] bg-[#0D0D1A] rounded-[7px]"
-      style={{ opacity: isGift ? 0.45 : 1 }}
+      className="flex justify-between items-center bg-[#111122] rounded-[7px]"
+      style={{ padding: '13px 12px', opacity: isGift ? 0.45 : 1 }}
     >
       <div>
-        <div className="text-[#E8E8F8] text-[12px] font-medium">{expense.title}</div>
-        <div className="text-[#5A5A88] text-[10px]">
+        <div className="text-[#E8E8F8] text-[13px] font-medium">{expense.title}</div>
+        <div className="text-[#AABBDD] text-[11px]">
           {isGift ? `prezent • nie wliczane • ` : ''}{formatDate(expense.date)}
         </div>
       </div>
       <div className="flex items-center gap-2">
         <span
-          className="text-[9px] px-[7px] py-[2px] rounded-[10px] font-medium bg-[#14142A]"
-          style={{ color: isGift ? '#336633' : '#5566AA' }}
+          className="text-[11px] rounded-[10px] font-medium bg-[#14142A]"
+          style={{ padding: '4px 10px', color: isGift ? '#448844' : '#7788CC' }}
         >
           {label}
         </span>
-        <span
-          className="text-[13px] font-semibold"
-          style={{ color: isGift ? '#5A5A88' : '#EEEEF8' }}
-        >
-          {expense.amount.toLocaleString('pl-PL')} PLN
+        <span className="text-[14px] font-semibold" style={{ color: isGift ? '#8899BB' : '#EEEEF8' }}>
+          {formatted}
+          <span style={{ color: isGift ? '#556677' : '#6677AA' }}> PLN</span>
         </span>
       </div>
     </div>

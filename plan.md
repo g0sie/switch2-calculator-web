@@ -21,7 +21,7 @@ Klasy z dziesiętnyymi wartościami sugerowane przez VS Code (np. `w-15.5`, `px-
 - `style={}` inline styles dla precyzyjnych wartości pikselowych
 - standardowych Tailwind klas bez dziesiętnych (np. `gap-3`, `py-2`, `mt-4`)
 
-Joy-Cony i TopBar już działają na inline styles — trzymać ten wzorzec.
+Spacing-sensitive elementy (HeroStat, FAB, listy) działają w całości na inline styles — trzymać ten wzorzec.
 
 ---
 
@@ -33,12 +33,12 @@ src/
     LeftJoyCon.tsx     ✅ gotowe (inline styles)
     RightJoyCon.tsx    ✅ gotowe (inline styles)
     TopBar.tsx         ✅ gotowe (inline styles)
-    HeroStat.tsx       ✅ struktura gotowa
-    GamesList.tsx      ✅ struktura + inline edit UI
-    ExpensesList.tsx   ✅ struktura
-    FAB.tsx            ✅ animacja otwarcia/zamknięcia
+    HeroStat.tsx       ✅ gotowe (inline styles, akcenty kolorystyczne)
+    GamesList.tsx      ✅ gotowe (scroll, format hh:mm, klik w rząd = edycja)
+    ExpensesList.tsx   ✅ gotowe (scroll, tagi, formatowanie kwot)
+    FAB.tsx            ✅ gotowe (animacje otwarcia/zamknięcia, slide-in/out)
   App.tsx              ✅ mock data, routing tabs, obliczenia
-  index.css            ✅ Tailwind v4 + Space Grotesk font
+  index.css            ✅ Tailwind v4 + Space Grotesk + scrollbar + FAB animacje
 main.tsx
 ```
 
@@ -48,23 +48,21 @@ main.tsx
 
 ### Co działa
 
-- Console Frame (lewy Joy-Con czerwony + ekran + prawy Joy-Con niebieski)
-- Joy-Cony: pełna wysokość z gradientem, przyciski (minus/plus, analog stick, D-pad/ABXY) z odstępami
-- TopBar: nawigacja Gry/Wydatki po lewej z aktywnym podkreśleniem na borderze, ikonki wifi/bateria/login po prawej
-- HeroStat: karta z kosztem/h, wydano łącznie, zagrane godziny
-- GamesList: lista gier z awatarami, separatory „Biblioteka gier" / „Niezliczone", inline edit godzin (hover → ołówek → pole + zapisz/anuluj)
-- ExpensesList: lista wydatków z datą, badge typem, kwotą, wyszarzenie dla prezentów
-- FAB: niebieski przycisk + który rozwija „Dodaj grę" i „Dodaj wydatek"
-- Responsywność: Joy-Cony ukryte na mobile (`hidden md:flex`)
-- Obliczenia: koszt/h, suma wydatków, suma godzin liczone z mock data
+- **Console Frame** — lewy Joy-Con czerwony + ekran + prawy Joy-Con niebieski, `height: 700px`
+- **Joy-Cony** — pełna wysokość z gradientem, przyciski z odstępami, ukryte na mobile (`hidden md:flex`)
+- **TopBar** — zakładki Gry/Wydatki z aktywnym podkreśleniem i kropką (po prawej dla Gry, po lewej dla Wydatki), ikony wifi/bateria/login
+- **HeroStat** — karta z niebieskim borderem; koszt/h biały duży, labele `#AABBDD`, liczby statystyk `#C8C8E8`; separator poziomy niebieski
+- **GamesList** — lista z awatarami, separatory „Biblioteka gier" / „niezliczone", godziny w formacie `hh:mm`, klik w rząd otwiera inline edit, scroll wewnętrzny
+- **ExpensesList** — lista wydatków z datą, badge z typem (padding, niebieski kolor), kwota z przyciemnionym ` PLN`, wyszarzenie prezentów, scroll wewnętrzny
+- **FAB** — niebieski `+` / czerwony `X`, menu „Dodaj grę" / „Dodaj wydatek" w niebieskim stylu; animacje: slide-in ze staggerem przy otwieraniu, synchroniczny slide-out przy zamykaniu, animowana ikona X
+- **Scrollbar** — globalny, subtelny (3px, kolor dopasowany do palety)
+- **Obliczenia** — koszt/h, suma wydatków (bez prezentów), suma godzin z mock data; kwoty obsługują ułamki
 
-### Do poprawienia w UI (zanim merge feat/ui-foundation → main)
+### Pozostałe do zrobienia przed merge → main
 
-1. **Padding ekranu** — zawartość screena (HeroStat, listy) ma za mały padding od krawędzi przy szerokim layoucie (1280px). Padding zmieniany na 20px inline, ale do weryfikacji po ostatnich zmianach.
-2. **SepLabel w GamesList** — separator „Biblioteka gier" / „Niezliczone" używa Tailwind klas które mogą nie działać. Zamienić na inline styles.
-3. **FAB** — na razie zawsze widoczny. Docelowo: widoczny tylko dla zalogowanej właścicielki.
-4. **Przycisk logowania** w TopBar — na razie dekoracyjny. Podłączyć do Firebase Auth.
-5. Ogólny polish i dopasowanie do `design-prototyp.html`.
+1. **FAB** — widoczny tylko dla zalogowanej właścicielki (po podłączeniu Firebase)
+2. **Przycisk logowania** w TopBar — dekoracyjny, do podłączenia do Firebase Auth
+3. Usunąć `src/components/.keep` (plik stworzony przez pomyłkę)
 
 ---
 
@@ -90,24 +88,25 @@ id, title, hoursPlayed (number | null), coverColor, coverInitials, createdAt
 
 **Kolekcja `expenses`:**
 ```
-id, title, amount, type ('console'|'game'|'bundle'|'accessory'|'gift'), date, isGift (boolean)
+id, title, amount (number, obsługuje ułamki), type ('console'|'game'|'bundle'|'accessory'|'gift'), date, isGift (boolean)
 ```
 
 Logika:
 - `Wydano łącznie` = suma `amount` gdzie `isGift === false`
 - `Zagrane godziny` = suma `hoursPlayed` gdzie `hoursPlayed !== null`
 - `Koszt/h` = Wydano / Zagrane godziny
+- Godziny przechowywane jako liczba dziesiętna (np. 1.5 = 1:30), wyświetlane jako `hh:mm`
 
 ### Etap 3 — Formularze CRUD
 
 Po kliknięciu FAB → „Dodaj grę" / „Dodaj wydatek":
 - Modal lub panel z formularzem
-- Walidacja: tytuł wymagany, kwota ≥ 0 itd.
+- Walidacja: tytuł wymagany, kwota ≥ 0, kwota przyjmuje przecinek dziesiętny
 - Zapis do Firestore, real-time odświeżenie listy
 
 Edycja istniejących wpisów:
-- Gry: inline edit godzin już jest. Dodać edycję tytułu/koloru (modal).
-- Wydatki: ikona edycji na hover → modal z edycją.
+- Gry: inline edit godzin (format `hh:mm`) po kliknięciu w rząd. Dodać edycję tytułu/koloru (modal).
+- Wydatki: klik w rząd → modal z edycją.
 
 ### Etap 4 — Deploy
 
@@ -120,7 +119,7 @@ Edycja istniejących wpisów:
 ## Gałęzie git
 
 - `main` — stabilna baza (aktualnie: init + brief + design-prototyp.html)
-- `feat/ui-foundation` — **aktywna gałąź** — cała praca nad UI (gotowa do merge po drobnych poprawkach)
+- `feat/ui-foundation` — **aktywna gałąź** — cała praca nad UI (prawie gotowa do merge)
 
 ---
 
