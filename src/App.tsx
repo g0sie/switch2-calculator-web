@@ -9,11 +9,14 @@ import { HeroStat } from './components/HeroStat'
 import { GamesList, type Game } from './components/GamesList'
 import { ExpensesList, type Expense } from './components/ExpensesList'
 import { FAB } from './components/FAB'
+import { AddGameModal } from './components/AddGameModal'
 
 type Tab = 'games' | 'expenses'
+type Modal = 'addGame' | 'addExpense' | null
 
 function App() {
   const [activeTab, setActiveTab] = useState<Tab>('games')
+  const [modal, setModal] = useState<Modal>(null)
   const [currentUser, setCurrentUser] = useState<User | null>(null)
   const [games, setGames] = useState<Game[]>([])
   const [expenses, setExpenses] = useState<Expense[]>([])
@@ -67,7 +70,10 @@ function App() {
                 <ExpensesList expenses={expenses} />
               )}
             </div>
-            {currentUser?.email === import.meta.env.VITE_OWNER_EMAIL && <FAB />}
+            {currentUser?.email === import.meta.env.VITE_OWNER_EMAIL && (
+              <FAB onAddGame={() => setModal('addGame')} onAddExpense={() => setModal('addExpense')} />
+            )}
+            {modal === 'addGame' && <AddGameModal onClose={() => setModal(null)} />}
           </div>
 
           <RightJoyCon />

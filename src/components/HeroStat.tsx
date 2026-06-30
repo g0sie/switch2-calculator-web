@@ -48,7 +48,7 @@ export function HeroStat({ costPerHour, totalSpent, totalHours, hasUncountedGame
               Zagrane godziny
             </div>
             <div className="text-[15px] font-semibold" style={{ color: '#C8C8E8' }}>
-              {totalHours}{' '}
+              {Math.floor(totalHours)}{' '}
               <span className="text-[10px] font-normal" style={{ color: '#6677AA' }}>
                 h{hasUncountedGames ? ' (+ ?)' : ''}
               </span>

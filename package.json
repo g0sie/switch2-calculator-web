@@ -13,6 +13,7 @@
     "@tabler/icons-react": "^3.44.0",
     "firebase": "^12.15.0",
     "react": "^19.2.0",
+    "react-colorful": "^5.7.0",
     "react-dom": "^19.2.0"
   },
   "devDependencies": {
