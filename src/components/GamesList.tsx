@@ -1,5 +1,12 @@
-import { useState } from "react";
-import { IconCheck, IconX } from "@tabler/icons-react";
+import { HexColorPicker } from "react-colorful";
+
+function getContrastColor(hex: string): string {
+  const r = parseInt(hex.slice(1, 3), 16)
+  const g = parseInt(hex.slice(3, 5), 16)
+  const b = parseInt(hex.slice(5, 7), 16)
+  const luminance = (0.299 * r + 0.587 * g + 0.114 * b) / 255
+  return luminance > 0.5 ? '#000000' : '#ffffff'
+}
 
 export interface Game {
   id: string;
@@ -11,6 +18,8 @@ export interface Game {
 
 interface GamesListProps {
   games: Game[];
+  onEditGame: (game: Game) => void;
+  isOwner: boolean;
 }
 
 function toHHMM(hours: number): string {
@@ -19,10 +28,9 @@ function toHHMM(hours: number): string {
   return `${h}:${m.toString().padStart(2, "0")}`;
 }
 
-
-export function GamesList({ games }: GamesListProps) {
-  const counted = games.filter((g) => g.hoursPlayed !== null);
-  const uncounted = games.filter((g) => g.hoursPlayed === null);
+export function GamesList({ games, onEditGame, isOwner }: GamesListProps) {
+  const played = games.filter((g) => g.hoursPlayed !== null && g.hoursPlayed > 0);
+  const notStarted = games.filter((g) => !g.hoursPlayed);
 
   return (
     <div
@@ -37,14 +45,14 @@ export function GamesList({ games }: GamesListProps) {
       }}
     >
       <SepLabel>Biblioteka gier</SepLabel>
-      {counted.map((game) => (
-        <GameRow key={game.id} game={game} />
+      {played.map((game) => (
+        <GameRow key={game.id} game={game} onEdit={() => onEditGame(game)} isOwner={isOwner} />
       ))}
-      {uncounted.length > 0 && (
+      {notStarted.length > 0 && (
         <>
-          <SepLabel style={{ marginTop: "12px" }}>niezliczone</SepLabel>
-          {uncounted.map((game) => (
-            <GameRow key={game.id} game={game} />
+          <SepLabel style={{ marginTop: "12px" }}>nierozpoczęte</SepLabel>
+          {notStarted.map((game) => (
+            <GameRow key={game.id} game={game} onEdit={() => onEditGame(game)} isOwner={isOwner} />
           ))}
         </>
       )}
@@ -73,32 +81,16 @@ function SepLabel({
   );
 }
 
-function GameRow({ game }: { game: Game }) {
-  const [editing, setEditing] = useState(false);
-  const [inputVal, setInputVal] = useState(
-    game.hoursPlayed != null ? toHHMM(game.hoursPlayed) : ""
-  );
-
-  const handleSave = () => setEditing(false);
-
-  const handleCancel = (e: React.MouseEvent) => {
-    e.stopPropagation();
-    setEditing(false);
-  };
-
-  const handleRowClick = () => {
-    if (!editing) setEditing(true);
-  };
-
+function GameRow({ game, onEdit, isOwner }: { game: Game; onEdit: () => void; isOwner: boolean }) {
   return (
     <div
-      className="group flex items-center gap-[10px] bg-[#111122] rounded-[7px]"
-      style={{ padding: "13px 12px", cursor: editing ? "default" : "pointer" }}
-      onClick={handleRowClick}
+      className={`flex items-center gap-[10px] bg-[#111122] rounded-[7px] transition-colors ${isOwner ? 'cursor-pointer hover:bg-[#16162A]' : ''}`}
+      style={{ padding: "13px 12px" }}
+      onClick={isOwner ? onEdit : undefined}
     >
       <div
         className="w-[30px] h-[30px] rounded-[5px] flex items-center justify-center text-[10px] font-bold shrink-0"
-        style={{ background: game.coverColor, color: "#fff" }}
+        style={{ background: game.coverColor, color: getContrastColor(game.coverColor) }}
       >
         {game.coverInitials}
       </div>
@@ -107,47 +99,20 @@ function GameRow({ game }: { game: Game }) {
         <div className="text-[#E8E8F8] text-[13px] font-medium truncate">
           {game.title}
         </div>
-        {game.hoursPlayed === null && !editing && (
-          <div className="text-[#AABBDD] text-[11px]">godziny nieznane</div>
-        )}
       </div>
 
-      {editing ? (
-        <div className="flex items-center gap-1" onClick={(e) => e.stopPropagation()}>
-          <input
-            type="text"
-            value={inputVal}
-            onChange={(e) => setInputVal(e.target.value)}
-            placeholder="0:00"
-            autoFocus
-            className="w-[64px] h-6 bg-[#10101C] border border-[#2244AA88] rounded text-[#F0F0F8] text-[12px] px-[6px] outline-none focus:border-[#4488FF]"
-          />
-          <button
-            onClick={handleSave}
-            aria-label="Zapisz"
-            className="p-[3px] rounded text-[#226633] hover:text-[#00AA44] cursor-pointer bg-transparent border-none"
-          >
-            <IconCheck size={14} />
-          </button>
-          <button
-            onClick={handleCancel}
-            aria-label="Anuluj"
-            className="p-[3px] rounded text-[#662222] hover:text-[#CC2222] cursor-pointer bg-transparent border-none"
-          >
-            <IconX size={14} />
-          </button>
-        </div>
-      ) : (
-        <div className="flex items-center gap-[5px]">
-          {game.hoursPlayed !== null ? (
-            <span className="text-[#AABBDD] text-[13px] font-medium">
-              {toHHMM(game.hoursPlayed)}
-            </span>
-          ) : (
-            <span className="text-[#6677AA] text-[14px] font-bold">?</span>
-          )}
-        </div>
-      )}
+      <div className="flex items-center">
+        {game.hoursPlayed !== null && game.hoursPlayed > 0 ? (
+          <span className="text-[#AABBDD] text-[13px] font-medium">
+            {toHHMM(game.hoursPlayed)}
+          </span>
+        ) : (
+          <span className="text-[#AABBDD] text-[13px] font-medium">0:00</span>
+        )}
+      </div>
     </div>
   );
 }
+
+// kept for potential future use
+export { HexColorPicker };
