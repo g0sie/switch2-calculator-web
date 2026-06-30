@@ -1,7 +1,4 @@
-import { useState, useRef, useEffect } from "react";
-import { IconCheck, IconX } from "@tabler/icons-react";
 import { HexColorPicker } from "react-colorful";
-import { updateGame } from "../lib/firestore";
 
 function getContrastColor(hex: string): string {
   const r = parseInt(hex.slice(1, 3), 16)
@@ -21,6 +18,7 @@ export interface Game {
 
 interface GamesListProps {
   games: Game[];
+  onEditGame: (game: Game) => void;
 }
 
 function toHHMM(hours: number): string {
@@ -29,7 +27,7 @@ function toHHMM(hours: number): string {
   return `${h}:${m.toString().padStart(2, "0")}`;
 }
 
-export function GamesList({ games }: GamesListProps) {
+export function GamesList({ games, onEditGame }: GamesListProps) {
   const played = games.filter((g) => g.hoursPlayed !== null && g.hoursPlayed > 0);
   const notStarted = games.filter((g) => !g.hoursPlayed);
 
@@ -47,13 +45,13 @@ export function GamesList({ games }: GamesListProps) {
     >
       <SepLabel>Biblioteka gier</SepLabel>
       {played.map((game) => (
-        <GameRow key={game.id} game={game} />
+        <GameRow key={game.id} game={game} onEdit={() => onEditGame(game)} />
       ))}
       {notStarted.length > 0 && (
         <>
           <SepLabel style={{ marginTop: "12px" }}>nierozpoczęte</SepLabel>
           {notStarted.map((game) => (
-            <GameRow key={game.id} game={game} />
+            <GameRow key={game.id} game={game} onEdit={() => onEditGame(game)} />
           ))}
         </>
       )}
@@ -82,168 +80,38 @@ function SepLabel({
   );
 }
 
-function GameRow({ game }: { game: Game }) {
-  const [editing, setEditing] = useState(false);
-  const [inputVal, setInputVal] = useState(
-    game.hoursPlayed != null ? toHHMM(game.hoursPlayed) : ""
-  );
-  const [colorPickerOpen, setColorPickerOpen] = useState(false);
-  const [pendingColor, setPendingColor] = useState(game.coverColor);
-  const colorRef = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    if (!colorPickerOpen) return;
-    const handleClick = (e: MouseEvent) => {
-      if (colorRef.current && !colorRef.current.contains(e.target as Node)) {
-        setColorPickerOpen(false);
-        setPendingColor(game.coverColor);
-      }
-    };
-    document.addEventListener("mousedown", handleClick);
-    return () => document.removeEventListener("mousedown", handleClick);
-  }, [colorPickerOpen, game.coverColor]);
-
-  const handleSaveColor = async () => {
-    await updateGame(game.id, { coverColor: pendingColor });
-    setColorPickerOpen(false);
-  };
-
-  const handleCancelColor = () => {
-    setPendingColor(game.coverColor);
-    setColorPickerOpen(false);
-  };
-
-  const handleSave = async () => {
-    const trimmed = inputVal.trim()
-    if (trimmed === '') {
-      await updateGame(game.id, { hoursPlayed: null })
-    } else {
-      let hours: number
-      if (trimmed.includes(':')) {
-        const [h, m] = trimmed.split(':').map(Number)
-        hours = h + m / 60
-      } else {
-        hours = parseFloat(trimmed.replace(',', '.'))
-      }
-      if (!isNaN(hours) && hours >= 0) await updateGame(game.id, { hoursPlayed: hours })
-    }
-    setEditing(false)
-  };
-
-  const handleCancel = (e: React.MouseEvent) => {
-    e.stopPropagation();
-    setEditing(false);
-  };
-
-  const handleRowClick = () => {
-    if (!editing && !colorPickerOpen) setEditing(true);
-  };
-
+function GameRow({ game, onEdit }: { game: Game; onEdit: () => void }) {
   return (
     <div
-      className="group flex items-center gap-[10px] bg-[#111122] rounded-[7px]"
-      style={{ padding: "13px 12px", cursor: editing ? "default" : "pointer", position: "relative" }}
-      onClick={handleRowClick}
+      className="flex items-center gap-[10px] bg-[#111122] rounded-[7px] cursor-pointer hover:bg-[#16162A] transition-colors"
+      style={{ padding: "13px 12px" }}
+      onClick={onEdit}
     >
-      {/* Cover z popoverem */}
-      <div ref={colorRef} style={{ position: "relative", flexShrink: 0 }} onClick={e => e.stopPropagation()}>
-        <div
-          className="w-[30px] h-[30px] rounded-[5px] flex items-center justify-center text-[10px] font-bold"
-          style={{ background: game.coverColor, color: getContrastColor(game.coverColor), cursor: "pointer" }}
-          onClick={() => setColorPickerOpen(o => !o)}
-          title="Zmień kolor okładki"
-        >
-          {game.coverInitials}
-        </div>
-        {colorPickerOpen && (
-          <div style={{
-            position: "absolute",
-            top: "calc(100% + 6px)",
-            left: 0,
-            zIndex: 40,
-            background: "#0F0F1E",
-            border: "1px solid #2233AA",
-            borderRadius: "10px",
-            padding: "10px",
-            display: "flex",
-            flexDirection: "column",
-            gap: "8px",
-          }}>
-            <HexColorPicker color={pendingColor} onChange={setPendingColor} style={{ width: "160px", height: "120px" }} />
-            <input
-              value={pendingColor}
-              onChange={e => setPendingColor(e.target.value)}
-              maxLength={7}
-              style={{ background: "#10101C", border: "1px solid #2244AA88", borderRadius: "6px", color: "#F0F0F8", fontSize: "12px", padding: "5px 8px", outline: "none", fontFamily: "monospace" }}
-            />
-            <div style={{ display: "flex", gap: "6px", justifyContent: "flex-end" }}>
-              <button onClick={handleCancelColor} style={smallBtn}>
-                <IconX size={12} />
-              </button>
-              <button onClick={handleSaveColor} style={{ ...smallBtn, background: "#003EBB", borderColor: "#1A55DD" }}>
-                <IconCheck size={12} />
-              </button>
-            </div>
-          </div>
-        )}
+      <div
+        className="w-[30px] h-[30px] rounded-[5px] flex items-center justify-center text-[10px] font-bold shrink-0"
+        style={{ background: game.coverColor, color: getContrastColor(game.coverColor) }}
+      >
+        {game.coverInitials}
       </div>
 
       <div className="flex-1 min-w-0">
         <div className="text-[#E8E8F8] text-[13px] font-medium truncate">
           {game.title}
         </div>
-        {game.hoursPlayed === null && !editing && (
-          <div className="text-[#AABBDD] text-[11px]">godziny nieznane</div>
-        )}
       </div>
 
-      {editing ? (
-        <div className="flex items-center gap-1" onClick={(e) => e.stopPropagation()}>
-          <input
-            type="text"
-            value={inputVal}
-            onChange={(e) => setInputVal(e.target.value)}
-            placeholder="0:00"
-            autoFocus
-            className="w-[64px] h-6 bg-[#10101C] border border-[#2244AA88] rounded text-[#F0F0F8] text-[12px] px-[6px] outline-none focus:border-[#4488FF]"
-          />
-          <button
-            onClick={handleSave}
-            aria-label="Zapisz"
-            className="p-[3px] rounded text-[#226633] hover:text-[#00AA44] cursor-pointer bg-transparent border-none"
-          >
-            <IconCheck size={14} />
-          </button>
-          <button
-            onClick={handleCancel}
-            aria-label="Anuluj"
-            className="p-[3px] rounded text-[#662222] hover:text-[#CC2222] cursor-pointer bg-transparent border-none"
-          >
-            <IconX size={14} />
-          </button>
-        </div>
-      ) : (
-        <div className="flex items-center gap-[5px]">
-          {game.hoursPlayed !== null ? (
-            <span className="text-[#AABBDD] text-[13px] font-medium">
-              {toHHMM(game.hoursPlayed)}
-            </span>
-          ) : (
-            <span className="text-[#6677AA] text-[14px] font-bold">?</span>
-          )}
-        </div>
-      )}
+      <div className="flex items-center">
+        {game.hoursPlayed !== null && game.hoursPlayed > 0 ? (
+          <span className="text-[#AABBDD] text-[13px] font-medium">
+            {toHHMM(game.hoursPlayed)}
+          </span>
+        ) : (
+          <span className="text-[#AABBDD] text-[13px] font-medium">0:00</span>
+        )}
+      </div>
     </div>
   );
 }
 
-const smallBtn: React.CSSProperties = {
-  background: "#14142A",
-  border: "1px solid #2E2E52",
-  borderRadius: "6px",
-  color: "#AABBDD",
-  cursor: "pointer",
-  padding: "4px 8px",
-  display: "flex",
-  alignItems: "center",
-}
+// kept for potential future use
+export { HexColorPicker };

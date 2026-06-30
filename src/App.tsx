@@ -11,6 +11,7 @@ import { ExpensesList, type Expense } from './components/ExpensesList'
 import { FAB } from './components/FAB'
 import { AddGameModal } from './components/AddGameModal'
 import { AddExpenseModal } from './components/AddExpenseModal'
+import { EditGameModal } from './components/EditGameModal'
 
 type Tab = 'games' | 'expenses'
 type Modal = 'addGame' | 'addExpense' | null
@@ -18,6 +19,7 @@ type Modal = 'addGame' | 'addExpense' | null
 function App() {
   const [activeTab, setActiveTab] = useState<Tab>('games')
   const [modal, setModal] = useState<Modal>(null)
+  const [editingGame, setEditingGame] = useState<Game | null>(null)
   const [currentUser, setCurrentUser] = useState<User | null>(null)
   const [games, setGames] = useState<Game[]>([])
   const [expenses, setExpenses] = useState<Expense[]>([])
@@ -66,7 +68,7 @@ function App() {
             />
             <div className="flex-1 overflow-hidden flex flex-col">
               {activeTab === 'games' ? (
-                <GamesList games={games} />
+                <GamesList games={games} onEditGame={currentUser?.email === import.meta.env.VITE_OWNER_EMAIL ? setEditingGame : () => {}} />
               ) : (
                 <ExpensesList expenses={expenses} />
               )}
@@ -76,6 +78,7 @@ function App() {
             )}
             {modal === 'addGame' && <AddGameModal onClose={() => setModal(null)} />}
             {modal === 'addExpense' && <AddExpenseModal onClose={() => setModal(null)} />}
+            {editingGame && <EditGameModal game={editingGame} onClose={() => setEditingGame(null)} />}
           </div>
 
           <RightJoyCon />

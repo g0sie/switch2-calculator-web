@@ -47,7 +47,7 @@ export function HeroStat({ costPerHour, totalSpent, totalHours }: HeroStatProps)
               Zagrane godziny
             </div>
             <div className="text-[15px] font-semibold" style={{ color: '#C8C8E8' }}>
-              {Math.floor(totalHours)}{' '}
+              {`${Math.floor(totalHours)}:${String(Math.round((totalHours % 1) * 60)).padStart(2, '0')}`}{' '}
               <span className="text-[10px] font-normal" style={{ color: '#6677AA' }}>h</span>
             </div>
           </div>
