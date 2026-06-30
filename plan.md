@@ -96,12 +96,15 @@ Wszystkie muszą być ustawione też w Netlify (Site settings → Environment va
 
 ---
 
-## Etap obecny — Deploy
+## Etap obecny — gotowe ✅
 
-1. Ustawić zmienne środowiskowe w Netlify
-2. Połączyć repo GitHub z Netlify i zdeployować
+Aplikacja zdeployowana na Netlify ([switch-calculator.netlify.app](https://switch-calculator.netlify.app/)), zmienne środowiskowe ustawione (w tym `SECRETS_SCAN_OMIT_KEYS` dla kluczy Firebase, które Netlify błędnie wykrywał jako sekrety), domena dodana do Firebase Authorized domains.
 
 ---
+
+## Do zrobienia
+
+- **Responsywność (RWD)** — obecnie działa tylko widok desktop, mobile wymaga poprawek
 
 ## Potencjalne przyszłe dodatki
 
