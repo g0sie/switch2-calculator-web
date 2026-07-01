@@ -22,4 +22,5 @@ React + TypeScript + Vite · Tailwind CSS v4 · Firebase (Auth + Firestore) · N
 - [x] **Firebase** — auth Google (tylko właścicielka), Firestore real-time sync, reguły bezpieczeństwa
 - [x] **Formularze CRUD** — dodawanie i edycja gier/wydatków przez modal, color picker
 - [x] **Deploy** — Netlify + zmienne środowiskowe
-- [ ] **Responsywność (RWD)** — działa desktop, mobile wymaga poprawek ← _tu jesteśmy_
+- [x] **Koszt per gra** — powiązanie wydatków z grami, obliczanie PLN/h per tytuł (podział kosztu dla pakietów), sortowanie biblioteki po PLN/h
+- [ ] **Responsywność (RWD)** — działa desktop, mobile wymaga poprawek
