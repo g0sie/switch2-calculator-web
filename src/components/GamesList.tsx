@@ -1,4 +1,5 @@
 import { HexColorPicker } from "react-colorful";
+import type { Expense } from "./ExpensesList";
 
 function getContrastColor(hex: string): string {
   const r = parseInt(hex.slice(1, 3), 16)
@@ -18,8 +19,15 @@ export interface Game {
 
 interface GamesListProps {
   games: Game[];
+  expenses: Expense[];
   onEditGame: (game: Game) => void;
   isOwner: boolean;
+}
+
+function calcGameCost(gameId: string, expenses: Expense[]): number {
+  return expenses
+    .filter(e => e.linkedGameIds && e.linkedGameIds.includes(gameId))
+    .reduce((sum, e) => sum + e.amount / (e.linkedGameIds!.length), 0)
 }
 
 function toHHMM(hours: number): string {
@@ -28,8 +36,16 @@ function toHHMM(hours: number): string {
   return `${h}:${m.toString().padStart(2, "0")}`;
 }
 
-export function GamesList({ games, onEditGame, isOwner }: GamesListProps) {
-  const played = games.filter((g) => g.hoursPlayed !== null && g.hoursPlayed > 0);
+export function GamesList({ games, expenses, onEditGame, isOwner }: GamesListProps) {
+  const played = games
+    .filter((g) => g.hoursPlayed !== null && g.hoursPlayed > 0)
+    .sort((a, b) => {
+      const costA = calcGameCost(a.id, expenses)
+      const costB = calcGameCost(b.id, expenses)
+      const cphA = costA > 0 && a.hoursPlayed ? costA / a.hoursPlayed : -1
+      const cphB = costB > 0 && b.hoursPlayed ? costB / b.hoursPlayed : -1
+      return cphB - cphA
+    });
   const notStarted = games.filter((g) => !g.hoursPlayed);
 
   return (
@@ -46,13 +62,13 @@ export function GamesList({ games, onEditGame, isOwner }: GamesListProps) {
     >
       <SepLabel>Biblioteka gier</SepLabel>
       {played.map((game) => (
-        <GameRow key={game.id} game={game} onEdit={() => onEditGame(game)} isOwner={isOwner} />
+        <GameRow key={game.id} game={game} expenses={expenses} onEdit={() => onEditGame(game)} isOwner={isOwner} />
       ))}
       {notStarted.length > 0 && (
         <>
           <SepLabel style={{ marginTop: "12px" }}>nierozpoczęte</SepLabel>
           {notStarted.map((game) => (
-            <GameRow key={game.id} game={game} onEdit={() => onEditGame(game)} isOwner={isOwner} />
+            <GameRow key={game.id} game={game} expenses={expenses} onEdit={() => onEditGame(game)} isOwner={isOwner} />
           ))}
         </>
       )}
@@ -81,7 +97,12 @@ function SepLabel({
   );
 }
 
-function GameRow({ game, onEdit, isOwner }: { game: Game; onEdit: () => void; isOwner: boolean }) {
+function GameRow({ game, expenses, onEdit, isOwner }: { game: Game; expenses: Expense[]; onEdit: () => void; isOwner: boolean }) {
+  const gameCost = calcGameCost(game.id, expenses)
+  const costPerHour = gameCost > 0 && game.hoursPlayed && game.hoursPlayed > 0
+    ? gameCost / game.hoursPlayed
+    : null
+
   return (
     <div
       className={`flex items-center gap-[10px] bg-[#111122] rounded-[7px] transition-colors ${isOwner ? 'cursor-pointer hover:bg-[#16162A]' : ''}`}
@@ -101,14 +122,13 @@ function GameRow({ game, onEdit, isOwner }: { game: Game; onEdit: () => void; is
         </div>
       </div>
 
-      <div className="flex items-center">
-        {game.hoursPlayed !== null && game.hoursPlayed > 0 ? (
-          <span className="text-[#AABBDD] text-[13px] font-medium">
-            {toHHMM(game.hoursPlayed)}
-          </span>
-        ) : (
-          <span className="text-[#AABBDD] text-[13px] font-medium">0:00</span>
-        )}
+      <div className="flex items-center gap-[10px]">
+        <span className="text-[12px] font-medium text-right" style={{ color: '#5577BB', width: '88px' }}>
+          {costPerHour !== null ? `${costPerHour.toFixed(2)} PLN/h` : ''}
+        </span>
+        <span className="text-[#AABBDD] text-[13px] font-medium text-right" style={{ width: '40px' }}>
+          {game.hoursPlayed && game.hoursPlayed > 0 ? toHHMM(game.hoursPlayed) : '0:00'}
+        </span>
       </div>
     </div>
   );

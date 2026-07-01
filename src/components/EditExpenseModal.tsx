@@ -2,10 +2,12 @@ import { useState, useRef, useEffect } from 'react'
 import { IconX, IconChevronDown } from '@tabler/icons-react'
 import { updateExpense } from '../lib/firestore'
 import type { Expense } from './ExpensesList'
+import type { Game } from './GamesList'
 
 interface EditExpenseModalProps {
   expense: Expense
   onClose: () => void
+  games: Game[]
 }
 
 const TYPE_LABELS: Record<Expense['type'], string> = {
@@ -26,19 +28,25 @@ const MONTH_NAMES = [
 const currentYear = new Date().getFullYear()
 const YEARS = Array.from({ length: 6 }, (_, i) => currentYear - 5 + i + 1).reverse()
 
-export function EditExpenseModal({ expense, onClose }: EditExpenseModalProps) {
+export function EditExpenseModal({ expense, onClose, games }: EditExpenseModalProps) {
   const [title, setTitle] = useState(expense.title)
   const [amountInput, setAmountInput] = useState(String(expense.amount).replace('.', ','))
   const [type, setType] = useState<Expense['type']>(expense.type)
   const [selectedMonth, setSelectedMonth] = useState(expense.date.getMonth())
   const [selectedYear, setSelectedYear] = useState(expense.date.getFullYear())
   const [isGift, setIsGift] = useState(expense.isGift)
+  const [linkedGameIds, setLinkedGameIds] = useState<string[]>(expense.linkedGameIds ?? [])
   const [saving, setSaving] = useState(false)
   const [error, setError] = useState('')
 
   const handleTypeChange = (t: Expense['type']) => {
     setType(t)
     setIsGift(t === 'gift')
+    if (t !== 'game' && t !== 'bundle') setLinkedGameIds([])
+  }
+
+  const toggleGame = (id: string) => {
+    setLinkedGameIds(prev => prev.includes(id) ? prev.filter(x => x !== id) : [...prev, id])
   }
 
   const handleSave = async () => {
@@ -53,10 +61,13 @@ export function EditExpenseModal({ expense, onClose }: EditExpenseModalProps) {
       type,
       date: new Date(selectedYear, selectedMonth, 1),
       isGift,
+      linkedGameIds,
     })
     setSaving(false)
     onClose()
   }
+
+  const showGamePicker = type === 'game' || type === 'bundle'
 
   return (
     <div
@@ -148,6 +159,32 @@ export function EditExpenseModal({ expense, onClose }: EditExpenseModalProps) {
             </button>
           </div>
         </Field>
+
+        {showGamePicker && (
+          <Field label="Powiąż z grą">
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '4px', maxHeight: '120px', overflowY: 'auto' }}>
+              {games.map(g => {
+                const selected = linkedGameIds.includes(g.id)
+                return (
+                  <button
+                    key={g.id}
+                    onClick={() => toggleGame(g.id)}
+                    style={{
+                      display: 'flex', alignItems: 'center', gap: '8px',
+                      background: selected ? '#1A3A88' : '#14142A',
+                      border: selected ? '1px solid #4466CC' : '1px solid transparent',
+                      borderRadius: '7px', padding: '6px 10px', cursor: 'pointer',
+                      fontFamily: 'Space Grotesk, sans-serif', textAlign: 'left',
+                    }}
+                  >
+                    <div style={{ width: '18px', height: '18px', borderRadius: '4px', background: g.coverColor, flexShrink: 0 }} />
+                    <span style={{ color: selected ? '#AABBFF' : '#C8C8E8', fontSize: '12px' }}>{g.title}</span>
+                  </button>
+                )
+              })}
+            </div>
+          </Field>
+        )}
 
         {error && <span style={{ color: '#CC3333', fontSize: '11px' }}>{error}</span>}
 

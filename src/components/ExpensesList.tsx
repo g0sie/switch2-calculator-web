@@ -5,6 +5,7 @@ export interface Expense {
   type: 'console' | 'game' | 'bundle' | 'accessory' | 'gift'
   date: Date
   isGift: boolean
+  linkedGameIds?: string[]
 }
 
 const TYPE_LABELS: Record<Expense['type'], string> = {

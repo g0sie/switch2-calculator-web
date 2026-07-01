@@ -39,6 +39,7 @@ export function subscribeToExpenses(callback: (expenses: Expense[]) => void): Un
         type: data.type,
         date: data.date.toDate(),
         isGift: data.isGift,
+        linkedGameIds: data.linkedGameIds ?? [],
       } as Expense;
     });
     callback(expenses);
