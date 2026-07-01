@@ -100,6 +100,8 @@ Wszystkie muszą być ustawione też w Netlify (Site settings → Environment va
 
 Aplikacja zdeployowana na Netlify ([switch-calculator.netlify.app](https://switch-calculator.netlify.app/)), zmienne środowiskowe ustawione (w tym `SECRETS_SCAN_OMIT_KEYS` dla kluczy Firebase, które Netlify błędnie wykrywał jako sekrety), domena dodana do Firebase Authorized domains.
 
+Zaimplementowano powiązanie wydatków z grami (`linkedGameIds` na wydatku): koszt gry = kwota wydatku / liczba powiązanych gier (obsługa pakietów). W liście gier wyświetlane PLN/h per tytuł, biblioteka sortowana malejąco po PLN/h. Favicon i tytuł strony ustawione.
+
 ---
 
 ## Do zrobienia
@@ -109,7 +111,7 @@ Aplikacja zdeployowana na Netlify ([switch-calculator.netlify.app](https://switc
 ## Potencjalne przyszłe dodatki
 
 - Usuwanie gier i wydatków
-- Łączenie gier z pakietów/wydatków z kolekcją gier
+- DLC — możliwość powiązania gry z wieloma wydatkami
 
 ---
 

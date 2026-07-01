@@ -71,7 +71,7 @@ function App() {
             />
             <div className="flex-1 overflow-hidden flex flex-col">
               {activeTab === 'games' ? (
-                <GamesList games={games} onEditGame={isOwner ? setEditingGame : () => {}} isOwner={isOwner} />
+                <GamesList games={games} expenses={expenses} onEditGame={isOwner ? setEditingGame : () => {}} isOwner={isOwner} />
               ) : (
                 <ExpensesList expenses={expenses} onEditExpense={isOwner ? setEditingExpense : () => {}} isOwner={isOwner} />
               )}
@@ -80,9 +80,9 @@ function App() {
               <FAB onAddGame={() => setModal('addGame')} onAddExpense={() => setModal('addExpense')} />
             )}
             {modal === 'addGame' && <AddGameModal onClose={() => setModal(null)} />}
-            {modal === 'addExpense' && <AddExpenseModal onClose={() => setModal(null)} />}
+            {modal === 'addExpense' && <AddExpenseModal onClose={() => setModal(null)} games={games} />}
             {editingGame && <EditGameModal game={editingGame} onClose={() => setEditingGame(null)} />}
-            {editingExpense && <EditExpenseModal expense={editingExpense} onClose={() => setEditingExpense(null)} />}
+            {editingExpense && <EditExpenseModal expense={editingExpense} onClose={() => setEditingExpense(null)} games={games} />}
           </div>
 
           <RightJoyCon />
